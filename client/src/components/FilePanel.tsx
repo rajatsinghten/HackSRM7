@@ -1,10 +1,12 @@
 import { useState } from "react";
 import {
   FileText, Upload, X, Loader2, Hash, Cpu, HardDrive,
-  AlertCircle, ChevronDown, ChevronLeft, ChevronRight, Layers, Zap, Paperclip, Download,
+  AlertCircle, ChevronDown, ChevronLeft, ChevronRight, Layers, Zap, Paperclip, Download, ShieldCheck,
 } from "lucide-react";
 import type { FileEntry, AnalyzedFile } from "../hooks/useMultiFileAnalyzer";
 import { formatSize } from "../hooks/useFileAnalyzer";
+import LosslessDecoder from "./LosslessDecoder";
+import type { RecoveredFile, DecodeResult } from "../hooks/useLossless";
 
 // ── FileCard ───────────────────────────────────────────────────────────────────
 interface FileCardProps {
@@ -108,6 +110,15 @@ export interface FilePanelProps {
   onExportCompressed: () => void;
   exportingRaw: boolean;
   exportingCompressed: boolean;
+  // Lossless pipeline
+  onExportLossless: () => void;
+  exportingLossless: boolean;
+  losslessDecoding: boolean;
+  losslessError: string | null;
+  losslessDecodeResult: DecodeResult | null;
+  onDecodeLossless: (file: File) => void;
+  onDownloadRecovered: (file: RecoveredFile) => void;
+  onClearDecode: () => void;
 }
 
 export default function FilePanel({
@@ -121,6 +132,14 @@ export default function FilePanel({
   onExportCompressed,
   exportingRaw,
   exportingCompressed,
+  onExportLossless,
+  exportingLossless,
+  losslessDecoding,
+  losslessError,
+  losslessDecodeResult,
+  onDecodeLossless,
+  onDownloadRecovered,
+  onClearDecode,
 }: FilePanelProps) {
   const [collapsed, setCollapsed] = useState(false);
   const totalTokens = resolvedFiles.reduce((sum, f) => sum + f.tokenEstimate, 0);
@@ -244,16 +263,41 @@ export default function FilePanel({
           <button
             className="fp-pipeline-btn fp-pipeline-btn--compressed"
             onClick={onExportCompressed}
-            disabled={exportingRaw || exportingCompressed}
+            disabled={exportingRaw || exportingCompressed || exportingLossless}
             type="button"
             title="Download chat + compressed file contents as a single .txt"
           >
             {exportingCompressed ? (
-              <><Loader2 size={14} className="fc-spinner" /> Compressing…</>
+              <><Loader2 size={14} className="fc-spinner" /> Building…</>
             ) : (
               <><Download size={14} /> Compressed Bundle (.txt)</>
             )}
           </button>
+
+          <button
+            className="fp-pipeline-btn fp-pipeline-btn--lossless"
+            onClick={onExportLossless}
+            disabled={exportingRaw || exportingCompressed || exportingLossless}
+            type="button"
+            title="Export a 100% lossless .json bundle that can be decoded back to the exact originals"
+          >
+            {exportingLossless ? (
+              <><Loader2 size={14} className="fc-spinner" /> Encoding…</>
+            ) : (
+              <><ShieldCheck size={14} /> Lossless Bundle (.json)</>
+            )}
+          </button>
+
+          {/* ── Lossless decoder ───────────────────────────────────────── */}
+          <div className="fp-pipeline-label fp-pipeline-label--decode">Recover Original Files</div>
+          <LosslessDecoder
+            running={losslessDecoding ? "decoding" : null}
+            error={losslessError}
+            decodeResult={losslessDecodeResult}
+            onDecode={onDecodeLossless}
+            onDownloadFile={onDownloadRecovered}
+            onClear={onClearDecode}
+          />
         </div>
       )}
     </aside>

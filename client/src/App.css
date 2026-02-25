@@ -2090,6 +2090,25 @@ button {
   box-shadow: 0 3px 14px rgba(16, 185, 129, 0.2);
 }
 
+.fp-pipeline-btn--lossless {
+  color: #fde68a;
+  background: rgba(245, 158, 11, 0.1);
+  border-color: rgba(251, 191, 36, 0.22);
+  margin-top: 0.35rem;
+}
+
+.fp-pipeline-btn--lossless:hover:not(:disabled) {
+  background: rgba(245, 158, 11, 0.2);
+  border-color: rgba(251, 191, 36, 0.4);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 14px rgba(245, 158, 11, 0.2);
+}
+
+.fp-pipeline-label--decode {
+  margin-top: 1rem;
+  color: #fbbf24;
+}
+
 /* ═══════════════════════════════════════════════════
    COMPRESS RESULTS PANEL  (replaces ChatArea)
 ═══════════════════════════════════════════════════ */
@@ -2569,6 +2588,239 @@ button {
   scrollbar-width: thin;
   scrollbar-color: rgba(124, 58, 237, 0.35) transparent;
   overscroll-behavior: contain;
+}
+
+/* ═══════════════════════════════════════════════════
+   LOSSLESS DECODER  (.ld-*)
+═══════════════════════════════════════════════════ */
+
+.ld-wrap {
+  margin-top: 0.5rem;
+  border-radius: 10px;
+  border: 1px solid rgba(251, 191, 36, 0.18);
+  background: rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+}
+
+/* Header */
+.ld-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.65rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #e2c97e;
+  background: rgba(245, 158, 11, 0.07);
+  border-bottom: 1px solid rgba(251, 191, 36, 0.12);
+}
+
+.ld-header-icon { color: #fbbf24; }
+.ld-header-icon--ok { color: #6ee7b7; }
+.ld-header-icon--warn { color: #fbbf24; }
+.ld-header-icon--error { color: #f87171; }
+
+.ld-close {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  background: none;
+  border: none;
+  color: #666688;
+  cursor: pointer;
+  padding: 2px;
+  border-radius: 4px;
+  transition: color 0.15s;
+}
+.ld-close:hover { color: #a0a0c8; }
+
+/* Drop zone */
+.ld-dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 1.1rem 0.75rem;
+  cursor: pointer;
+  border: 1.5px dashed rgba(251, 191, 36, 0.2);
+  border-radius: 0 0 9px 9px;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.ld-dropzone:hover,
+.ld-dropzone--active {
+  background: rgba(245, 158, 11, 0.07);
+  border-color: rgba(251, 191, 36, 0.45);
+}
+
+.ld-drop-icon { color: #fbbf24; opacity: 0.7; }
+
+.ld-drop-title {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #c09a40;
+}
+
+.ld-drop-sub {
+  margin: 0;
+  font-size: 0.67rem;
+  color: #5a5a7a;
+  text-align: center;
+}
+
+/* Loading */
+.ld-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 1.4rem 1rem;
+  color: #8888a8;
+  font-size: 0.78rem;
+}
+
+.ld-spinner {
+  color: #fbbf24;
+  animation: spin 1s linear infinite;
+}
+
+/* Error */
+.ld-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  color: #f87171;
+  font-size: 0.75rem;
+  line-height: 1.45;
+}
+.ld-error svg { flex-shrink: 0; margin-top: 1px; }
+
+/* Retry */
+.ld-retry-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  width: calc(100% - 1rem);
+  margin: 0 0.5rem 0.6rem;
+  padding: 0.45rem;
+  font-size: 0.73rem;
+  font-weight: 600;
+  color: #a0a0c8;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 7px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.ld-retry-btn:hover { background: rgba(255, 255, 255, 0.08); color: #c4b5fd; }
+.ld-retry-btn--decode-another { margin-top: 0.5rem; }
+
+/* Status badge */
+.ld-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.65rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+.ld-badge--ok  { color: #6ee7b7; background: rgba(16, 185, 129, 0.07); }
+.ld-badge--warn { color: #fbbf24; background: rgba(245, 158, 11, 0.07); }
+
+/* File list */
+.ld-file-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 0.4rem 0.5rem;
+  max-height: 260px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(124, 58, 237, 0.3) transparent;
+}
+
+.ld-file-row {
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 0.4rem 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.ld-file-info {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.ld-file-icon { color: #6ee7b7; flex-shrink: 0; }
+
+.ld-file-name {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #c4b5fd;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ld-file-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.ld-file-badge--ok   { color: #6ee7b7; background: rgba(16, 185, 129, 0.15); }
+.ld-file-badge--warn { color: #fbbf24; background: rgba(245, 158, 11, 0.15); }
+
+.ld-file-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.67rem;
+  color: #525272;
+}
+
+.ld-file-lang {
+  font-style: italic;
+  color: #4a4a6a;
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ld-dl-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  align-self: flex-end;
+  padding: 0.22rem 0.6rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: #a78bfa;
+  background: rgba(124, 58, 237, 0.1);
+  border: 1px solid rgba(167, 139, 250, 0.2);
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, transform 0.1s;
+}
+.ld-dl-btn:hover {
+  background: rgba(124, 58, 237, 0.22);
+  border-color: rgba(167, 139, 250, 0.4);
+  transform: translateY(-1px);
 }
 
 @keyframes crFadeIn {

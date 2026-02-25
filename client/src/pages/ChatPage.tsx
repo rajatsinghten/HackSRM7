@@ -9,6 +9,7 @@ import CompressPreview from "../components/CompressPreview";
 import { useMultiFileAnalyzer } from "../hooks/useMultiFileAnalyzer";
 import { useCompressor } from "../hooks/useCompressor";
 import { usePipeline } from "../hooks/usePipeline";
+import { useLossless } from "../hooks/useLossless";
 import { useCompressResults } from "../contexts/CompressResultsContext";
 
 let msgCounter = 0;
@@ -23,6 +24,15 @@ export default function ChatPage() {
   const { entries: fileEntries, resolvedFiles, addFiles, removeFile } = useMultiFileAnalyzer();
   const { compResults, compressing, compressFiles, clearResults } = useCompressor();
   const { running: pipelineRunning, exportRaw, exportCompressed } = usePipeline();
+  const {
+    running: losslessRunning,
+    error: losslessError,
+    decodeResult: losslessDecodeResult,
+    exportLossless,
+    decodeLossless,
+    downloadRecovered,
+    clearDecodeResult,
+  } = useLossless();
   const [previewCollapsed, setPreviewCollapsed] = useState(false);
 
   const handleCompress = useCallback(() => {
@@ -110,6 +120,14 @@ export default function ChatPage() {
         onExportCompressed={() => exportCompressed(messages, fileEntries)}
         exportingRaw={pipelineRunning === "raw"}
         exportingCompressed={pipelineRunning === "compressed"}
+        onExportLossless={() => exportLossless(fileEntries)}
+        exportingLossless={losslessRunning === "encoding"}
+        losslessDecoding={losslessRunning === "decoding"}
+        losslessError={losslessError}
+        losslessDecodeResult={losslessDecodeResult}
+        onDecodeLossless={decodeLossless}
+        onDownloadRecovered={downloadRecovered}
+        onClearDecode={clearDecodeResult}
       />
     </div>
   );

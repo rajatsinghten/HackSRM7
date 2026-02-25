@@ -1,7 +1,11 @@
 import { Scissors, Zap, Code2, BrainCircuit, ArrowRight, Github } from "lucide-react";
 import Galaxy from "./background";
 
-function LandingPage() {
+interface LandingPageProps {
+  onTryIt?: () => void;
+}
+
+function LandingPage({ onTryIt }: LandingPageProps) {
   return (
     <div className="landing">
       {/* Galaxy background */}
@@ -51,7 +55,7 @@ function LandingPage() {
           hashing — so LLMs see more while you pay less.
         </p>
         <div className="hero-actions">
-          <button className="btn btn-primary">
+          <button className="btn btn-primary" onClick={onTryIt}>
             Try It Now <ArrowRight size={16} />
           </button>
           <button className="btn btn-outline">Learn More</button>

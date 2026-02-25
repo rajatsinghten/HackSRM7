@@ -20,6 +20,8 @@ function LandingPage({ onTryIt }: LandingPageProps) {
           rotationSpeed={0.03}
           transparent={false}
           autoCenterRepulsion={0.6}
+          mouseInteraction={true}
+          mouseRepulsion={true}
         />
       </div>
 
@@ -128,6 +130,11 @@ function LandingPage({ onTryIt }: LandingPageProps) {
             num="03"
             title="Send to LLM"
             description="The compressed payload plus a tiny decode preamble is sent to the model — fitting far more context into the same window."
+          />
+          <Step
+            num="04"
+            title="Decode on Demand"
+            description="Our LLM add-on works as a universal decoder layer — when the model responds, the plugin automatically decompresses the output, giving you clean, readable code without manual intervention."
           />
         </div>
       </section>

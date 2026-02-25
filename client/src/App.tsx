@@ -1,15 +1,21 @@
-import { useState } from 'react'
+import { Routes, Route, Navigate } from 'react-router-dom'
 import './App.css'
 import LandingPage from './LandingPage'
 import ChatPage from './pages/ChatPage'
-
-type Page = 'landing' | 'chat'
+import AllResultsPage from './pages/AllResultsPage'
+import { CompressResultsProvider } from './contexts/CompressResultsContext'
 
 function App() {
-  const [page, setPage] = useState<Page>('landing')
-
-  if (page === 'chat') return <ChatPage />
-  return <LandingPage onTryIt={() => setPage('chat')} />
+  return (
+    <CompressResultsProvider>
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/chat" element={<ChatPage />} />
+        <Route path="/details" element={<AllResultsPage />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </CompressResultsProvider>
+  )
 }
 
 export default App

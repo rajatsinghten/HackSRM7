@@ -1,11 +1,9 @@
 import { Scissors, Zap, Code2, BrainCircuit, ArrowRight, Github } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import Galaxy from "./background";
 
-interface LandingPageProps {
-  onTryIt?: () => void;
-}
-
-function LandingPage({ onTryIt }: LandingPageProps) {
+function LandingPage() {
+  const navigate = useNavigate();
   return (
     <div className="landing">
       {/* Galaxy background */}
@@ -57,7 +55,7 @@ function LandingPage({ onTryIt }: LandingPageProps) {
           hashing — so LLMs see more while you pay less.
         </p>
         <div className="hero-actions">
-          <button className="btn btn-primary" onClick={onTryIt}>
+          <button className="btn btn-primary" onClick={() => navigate("/chat")}>
             Try It Now <ArrowRight size={16} />
           </button>
           <button className="btn btn-outline">Learn More</button>

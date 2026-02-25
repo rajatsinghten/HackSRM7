@@ -1,41 +1,27 @@
 import { useState, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import Galaxy from "../background";
-import Sidebar from "../components/Sidebar";
-import type { ChatEntry } from "../components/Sidebar";
 import ChatArea from "../components/ChatArea";
 import type { Message } from "../components/ChatArea";
 import PromptInput from "../components/PromptInput";
 import FilePanel from "../components/FilePanel";
-import CompressResults from "../components/CompressResults";
+import CompressPreview from "../components/CompressPreview";
 import { useMultiFileAnalyzer } from "../hooks/useMultiFileAnalyzer";
 import { useCompressor } from "../hooks/useCompressor";
+import { useCompressResults } from "../contexts/CompressResultsContext";
 
 let msgCounter = 0;
 function uid() {
   return `msg-${++msgCounter}-${Date.now()}`;
 }
 
-let chatCounter = 0;
-function chatId() {
-  return `chat-${++chatCounter}`;
-}
-
-function newChat(firstMsg?: string): ChatEntry {
-  return {
-    id: chatId(),
-    title: firstMsg ? firstMsg.slice(0, 36) + (firstMsg.length > 36 ? "…" : "") : "New Chat",
-  };
-}
-
 export default function ChatPage() {
-  const [chats, setChats] = useState<ChatEntry[]>([]);
-  const [activeChatId, setActiveChatId] = useState<string | null>(null);
-  const [messagesByChat, setMessagesByChat] = useState<Record<string, Message[]>>({});
+  const navigate = useNavigate();
+  const { setResultsData } = useCompressResults();
+  const [messages, setMessages] = useState<Message[]>([]);
   const { entries: fileEntries, resolvedFiles, addFiles, removeFile } = useMultiFileAnalyzer();
   const { compResults, compressing, compressFiles, clearResults } = useCompressor();
   const [showResults, setShowResults] = useState(false);
-
-  const activeMessages: Message[] = (activeChatId && messagesByChat[activeChatId]) || [];
 
   const handleCompress = useCallback(() => {
     const filesToCompress = fileEntries
@@ -51,61 +37,15 @@ export default function ChatPage() {
     clearResults();
   }, [clearResults]);
 
-  const handleNewChat = useCallback(() => {
-    const entry = newChat();
-    setChats((prev) => [entry, ...prev]);
-    setActiveChatId(entry.id);
-    setMessagesByChat((prev) => ({ ...prev, [entry.id]: [] }));
-  }, []);
-
-  const handleSelectChat = useCallback((id: string) => {
-    setActiveChatId(id);
-  }, []);
-
-  const handleDeleteChat = useCallback((id: string) => {
-    setChats((prev) => {
-      const next = prev.filter((c) => c.id !== id);
-      // Synchronously compute fallback active chat inside the batch
-      setActiveChatId((curActive) =>
-        curActive === id ? (next[0]?.id ?? null) : curActive
-      );
-      return next;
-    });
-    setMessagesByChat((prev) => {
-      const next = { ...prev };
-      delete next[id];
-      return next;
-    });
-  }, []);
+  const handleShowDetails = useCallback(() => {
+    setResultsData(compResults);
+    navigate("/details");
+  }, [setResultsData, compResults, navigate]);
 
   const handleSend = useCallback(
     (text: string) => {
-      let currentId = activeChatId;
-
-      // If no active chat, create one automatically
-      if (!currentId) {
-        const entry = newChat(text);
-        currentId = entry.id;
-        setChats((prev) => [entry, ...prev]);
-        setActiveChatId(currentId);
-        setMessagesByChat((prev) => ({ ...prev, [currentId!]: [] }));
-      } else {
-        // Update title from first message if still "New Chat"
-        setChats((prev) =>
-          prev.map((c) =>
-            c.id === currentId && c.title === "New Chat"
-              ? { ...c, title: text.slice(0, 36) + (text.length > 36 ? "…" : "") }
-              : c
-          )
-        );
-      }
-
       const userMsg: Message = { id: uid(), role: "user", content: text };
-
-      setMessagesByChat((prev) => ({
-        ...prev,
-        [currentId!]: [...(prev[currentId!] || []), userMsg],
-      }));
+      setMessages((prev) => [...prev, userMsg]);
 
       // Placeholder assistant response
       setTimeout(() => {
@@ -114,15 +54,13 @@ export default function ChatPage() {
           role: "assistant",
           content: "⏳ Processing your request…",
         };
-        setMessagesByChat((prev) => ({
-          ...prev,
-          [currentId!]: [...(prev[currentId!] || []), assistantMsg],
-        }));
+        setMessages((prev) => [...prev, assistantMsg]);
       }, 600);
     },
-    [activeChatId]
+    []
   );
 
+  // ── Main layout ───────────────────────────────────────────────────────────
   return (
     <div className="chat-layout">
       {/* OGL Galaxy background — kept alive */}
@@ -140,22 +78,18 @@ export default function ChatPage() {
         />
       </div>
 
-      {/* Sidebar */}
-      <Sidebar
-        chats={chats}
-        activeChatId={activeChatId}
-        onNewChat={handleNewChat}
-        onSelectChat={handleSelectChat}
-        onDeleteChat={handleDeleteChat}
-      />
+      {/* Left: Compression preview (replaces former sidebar) */}
+      {showResults && compResults.length > 0 && (
+        <CompressPreview
+          entries={compResults}
+          onShowDetails={handleShowDetails}
+          onClose={handleCloseResults}
+        />
+      )}
 
       {/* Center column */}
       <div className="chat-center">
-        {showResults && compResults.length > 0 ? (
-          <CompressResults entries={compResults} onClose={handleCloseResults} />
-        ) : (
-          <ChatArea messages={activeMessages} />
-        )}
+        <ChatArea messages={messages} />
         <PromptInput
           onSend={handleSend}
           onAddFiles={addFiles}

@@ -297,14 +297,11 @@ def summarise(text: str, language: str = "unknown",
     compressed, hash_table = generate_compressed(text, language, aggressive=True)
     compressed_tokens = max(1, len(compressed) // 4)
 
-    # Pick best level
-    options = {
-        "skeleton": skeleton_tokens,
-        "architecture": arch_tokens,
-        "compressed": compressed_tokens,
-    }
-    best_level = min(options, key=options.get)  # type: ignore
-    best_tokens = options[best_level]
+    # Pick best level — only between minified/compressed representations.
+    # Skeleton and architecture are structural views, not real compression;
+    # using them would produce misleadingly high reduction percentages.
+    best_level = "compressed"
+    best_tokens = compressed_tokens
     reduction = (1 - best_tokens / original_tokens) * 100 if original_tokens else 0
 
     return SummaryResult(

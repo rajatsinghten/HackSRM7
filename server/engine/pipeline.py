@@ -178,8 +178,16 @@ def compress(text: str, filename: str = "unknown",
     # ── Step 5: Build decode preamble ─────────────────────────────────────────
     preamble = _build_decode_preamble(summary.hash_decode_map, language)
 
-    # ── Overall best reduction ────────────────────────────────────────────────
-    best_tokens = summary.best_tokens
+    # ── Overall best reduction ─────────────────────────────────────────────────
+    # Only compare against minified/compressed output — skeleton and architecture
+    # are structural summaries, not actual compression, so they must not be used
+    # to claim a compression ratio.
+    if minified_tokens <= summary.compressed_tokens:
+        best_tokens = minified_tokens
+        best_level = "minified"
+    else:
+        best_tokens = summary.compressed_tokens
+        best_level = "compressed"
     overall_reduction = (1 - best_tokens / original_tokens) * 100 if original_tokens else 0
 
     return CompressionReport(
@@ -212,7 +220,7 @@ def compress(text: str, filename: str = "unknown",
         hash_decode_map=summary.hash_decode_map,
         hash_entries_count=summary.hash_entries_count,
 
-        best_level=summary.recommended_level,
+        best_level=best_level,
         best_tokens=best_tokens,
         overall_reduction_pct=round(overall_reduction, 2),
 

@@ -2067,6 +2067,7 @@
   word-break: break-word;
   scrollbar-width: thin;
   scrollbar-color: rgba(124, 58, 237, 0.25) transparent;
+  overscroll-behavior: contain;
 }
 
 /* ── Decode preamble ────────────────────────────── */
@@ -2123,9 +2124,13 @@
 }
 
 .cr-code--preamble {
-  max-height: 200px;
+  max-height: 320px;
   font-size: 0.72rem;
   color: #8888a8;
+  overflow-y: scroll;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(124, 58, 237, 0.35) transparent;
+  overscroll-behavior: contain;
 }
 
 @keyframes crFadeIn {

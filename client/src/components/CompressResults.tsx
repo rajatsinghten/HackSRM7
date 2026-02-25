@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import {
   ArrowDown,
   ArrowRight,
@@ -208,6 +208,18 @@ function ResultCard({ entry }: ResultCardProps) {
 function DecodePreamble({ preamble }: { preamble: string }) {
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
+  const bodyRef = useRef<HTMLDivElement>(null);
+
+  const handleToggle = () => {
+    const next = !open;
+    setOpen(next);
+    if (next) {
+      // After the DOM updates, scroll the preamble body into view
+      setTimeout(() => {
+        bodyRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }, 60);
+    }
+  };
 
   const handleCopy = async () => {
     try {
@@ -220,10 +232,10 @@ function DecodePreamble({ preamble }: { preamble: string }) {
   };
 
   return (
-    <div className="cr-preamble">
+    <div className="cr-preamble" ref={bodyRef}>
       <button
         className="cr-preamble-toggle"
-        onClick={() => setOpen((v) => !v)}
+        onClick={handleToggle}
         type="button"
       >
         <BarChart3 size={13} />

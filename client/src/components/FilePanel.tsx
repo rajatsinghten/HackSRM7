@@ -1,7 +1,7 @@
 import { useState } from "react";
 import {
   FileText, Upload, X, Loader2, Hash, Cpu, HardDrive,
-  AlertCircle, ChevronDown, Layers, Zap, Download,
+  AlertCircle, ChevronDown, ChevronLeft, ChevronRight, Layers, Zap, Paperclip, Download,
 } from "lucide-react";
 import type { FileEntry, AnalyzedFile } from "../hooks/useMultiFileAnalyzer";
 import { formatSize } from "../hooks/useFileAnalyzer";
@@ -122,16 +122,47 @@ export default function FilePanel({
   exportingRaw,
   exportingCompressed,
 }: FilePanelProps) {
+  const [collapsed, setCollapsed] = useState(false);
   const totalTokens = resolvedFiles.reduce((sum, f) => sum + f.tokenEstimate, 0);
   const hasResolved = resolvedFiles.length > 0;
+
+  if (collapsed) {
+    return (
+      <div
+        className="fp-collapsed"
+        onClick={() => setCollapsed(false)}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => e.key === "Enter" && setCollapsed(false)}
+        title="Expand files panel"
+      >
+        <ChevronLeft size={14} />
+        <Paperclip size={14} className="fp-collapsed-icon" />
+        {entries.length > 0 && (
+          <span className="fp-collapsed-badge">{entries.length}</span>
+        )}
+        <span className="fp-collapsed-label">Files</span>
+      </div>
+    );
+  }
 
   return (
     <aside className="file-panel">
       <div className="fp-header">
         <span className="fp-header-title">Attached Files</span>
-        {entries.length > 0 && (
-          <span className="fp-file-count">{entries.length}</span>
-        )}
+        <div className="fp-header-right">
+          {entries.length > 0 && (
+            <span className="fp-file-count">{entries.length}</span>
+          )}
+          <button
+            className="fp-collapse-btn"
+            onClick={() => setCollapsed(true)}
+            title="Collapse panel"
+            type="button"
+          >
+            <ChevronRight size={14} />
+          </button>
+        </div>
       </div>
 
       <div className="fp-body">

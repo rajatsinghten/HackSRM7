@@ -23,19 +23,18 @@ export default function ChatPage() {
   const { entries: fileEntries, resolvedFiles, addFiles, removeFile } = useMultiFileAnalyzer();
   const { compResults, compressing, compressFiles, clearResults } = useCompressor();
   const { running: pipelineRunning, exportRaw, exportCompressed } = usePipeline();
-  const [showResults, setShowResults] = useState(false);
+  const [previewCollapsed, setPreviewCollapsed] = useState(false);
 
   const handleCompress = useCallback(() => {
     const filesToCompress = fileEntries
       .filter((e) => !e.analysis.sizeError && !e.analysis.fetchError && !e.analysis.analyzing)
       .map((e) => ({ id: e.id, file: e.file }));
     if (filesToCompress.length === 0) return;
-    setShowResults(true);
     compressFiles(filesToCompress);
   }, [fileEntries, compressFiles]);
 
   const handleCloseResults = useCallback(() => {
-    setShowResults(false);
+    setPreviewCollapsed(false);
     clearResults();
   }, [clearResults]);
 
@@ -80,14 +79,14 @@ export default function ChatPage() {
         />
       </div>
 
-      {/* Left: Compression preview (replaces former sidebar) */}
-      {showResults && compResults.length > 0 && (
-        <CompressPreview
-          entries={compResults}
-          onShowDetails={handleShowDetails}
-          onClose={handleCloseResults}
-        />
-      )}
+      {/* Left: Compression preview — always mounted so collapsed state persists */}
+      <CompressPreview
+        entries={compResults}
+        onShowDetails={handleShowDetails}
+        onClose={handleCloseResults}
+        collapsed={previewCollapsed}
+        onToggleCollapse={() => setPreviewCollapsed((v) => !v)}
+      />
 
       {/* Center column */}
       <div className="chat-center">
@@ -106,7 +105,7 @@ export default function ChatPage() {
         onRemove={removeFile}
         onCompress={handleCompress}
         compressing={compressing}
-        hasCompressResults={compResults.length > 0 && showResults}
+        hasCompressResults={compResults.length > 0}
         onExportRaw={() => exportRaw(messages, fileEntries)}
         onExportCompressed={() => exportCompressed(messages, fileEntries)}
         exportingRaw={pipelineRunning === "raw"}

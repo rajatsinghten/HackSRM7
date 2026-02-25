@@ -9,6 +9,7 @@ import {
   ArrowDown,
   ArrowRight,
   ExternalLink,
+  Loader2,
 } from "lucide-react";
 import type { FileCompressionEntry } from "../hooks/useCompressor";
 import MonacoViewer from "./MonacoViewer";
@@ -19,20 +20,83 @@ interface CompressPreviewProps {
   entries: FileCompressionEntry[];
   onShowDetails: () => void;
   onClose: () => void;
+  collapsed: boolean;
+  onToggleCollapse: () => void;
 }
 
 export default function CompressPreview({
   entries,
   onShowDetails,
   onClose,
+  collapsed,
+  onToggleCollapse,
 }: CompressPreviewProps) {
-  const [collapsed, setCollapsed] = useState(false);
   const [tab, setTab] = useState<PreviewTab>("compressed");
   const [copied, setCopied] = useState(false);
 
   // Find the best result (highest reduction %)
   const completedEntries = entries.filter((e) => e.result !== null);
-  if (completedEntries.length === 0) return null;
+
+  // ── Always render the collapsed strip when collapsed, regardless of load state ──
+  if (collapsed) {
+    return (
+      <button
+        className="cp-collapsed"
+        onClick={onToggleCollapse}
+        type="button"
+        title="Expand results panel"
+      >
+        <ChevronRight size={14} />
+        <Zap size={14} className="cp-collapsed-icon" />
+        <span className="cp-collapsed-label">Results</span>
+      </button>
+    );
+  }
+
+  // Nothing to show yet — render idle or loading state inside the panel
+  if (completedEntries.length === 0) {
+    const isCompressing = entries.some((e) => e.compressing);
+    return (
+      <aside className="cp-panel">
+        <div className="cp-header">
+          <div className="cp-header-left">
+            <Zap size={15} className="cp-header-icon" />
+            <span className="cp-header-title">Compression</span>
+          </div>
+          <div className="cp-header-actions">
+            <button
+              className="cp-collapse-btn"
+              onClick={onToggleCollapse}
+              title="Collapse panel"
+              type="button"
+            >
+              <ChevronLeft size={14} />
+            </button>
+          </div>
+        </div>
+        <div className="cp-empty">
+          {isCompressing ? (
+            <>
+              <Loader2 size={28} className="cp-empty-spinner" />
+              <p className="cp-empty-title">Compressing…</p>
+              <p className="cp-empty-sub">Analysing and compressing your files</p>
+            </>
+          ) : (
+            <>
+              <div className="cp-empty-icon">
+                <Zap size={26} strokeWidth={1.5} />
+              </div>
+              <p className="cp-empty-title">No results yet</p>
+              <p className="cp-empty-sub">
+                Attach files in the right panel and click
+                &ldquo;Compress Files&rdquo; to see compression results here.
+              </p>
+            </>
+          )}
+        </div>
+      </aside>
+    );
+  }
 
   const bestEntry = completedEntries.reduce((best, cur) =>
     (cur.result!.overallReductionPct > (best.result?.overallReductionPct ?? 0))
@@ -71,16 +135,6 @@ export default function CompressPreview({
     }
   };
 
-  if (collapsed) {
-    return (
-      <div className="cp-collapsed" onClick={() => setCollapsed(false)} role="button" tabIndex={0}>
-        <ChevronRight size={14} />
-        <Zap size={14} className="cp-collapsed-icon" />
-        <span className="cp-collapsed-label">Results</span>
-      </div>
-    );
-  }
-
   return (
     <aside className="cp-panel">
       {/* Header */}
@@ -92,7 +146,7 @@ export default function CompressPreview({
         <div className="cp-header-actions">
           <button
             className="cp-collapse-btn"
-            onClick={() => setCollapsed(true)}
+            onClick={onToggleCollapse}
             title="Collapse panel"
             type="button"
           >

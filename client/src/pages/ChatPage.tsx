@@ -6,7 +6,9 @@ import ChatArea from "../components/ChatArea";
 import type { Message } from "../components/ChatArea";
 import PromptInput from "../components/PromptInput";
 import FilePanel from "../components/FilePanel";
+import CompressResults from "../components/CompressResults";
 import { useMultiFileAnalyzer } from "../hooks/useMultiFileAnalyzer";
+import { useCompressor } from "../hooks/useCompressor";
 
 let msgCounter = 0;
 function uid() {
@@ -30,8 +32,24 @@ export default function ChatPage() {
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
   const [messagesByChat, setMessagesByChat] = useState<Record<string, Message[]>>({});
   const { entries: fileEntries, resolvedFiles, addFiles, removeFile } = useMultiFileAnalyzer();
+  const { compResults, compressing, compressFiles, clearResults } = useCompressor();
+  const [showResults, setShowResults] = useState(false);
 
   const activeMessages: Message[] = (activeChatId && messagesByChat[activeChatId]) || [];
+
+  const handleCompress = useCallback(() => {
+    const filesToCompress = fileEntries
+      .filter((e) => !e.analysis.sizeError && !e.analysis.fetchError && !e.analysis.analyzing)
+      .map((e) => ({ id: e.id, file: e.file }));
+    if (filesToCompress.length === 0) return;
+    setShowResults(true);
+    compressFiles(filesToCompress);
+  }, [fileEntries, compressFiles]);
+
+  const handleCloseResults = useCallback(() => {
+    setShowResults(false);
+    clearResults();
+  }, [clearResults]);
 
   const handleNewChat = useCallback(() => {
     const entry = newChat();
@@ -133,7 +151,11 @@ export default function ChatPage() {
 
       {/* Center column */}
       <div className="chat-center">
-        <ChatArea messages={activeMessages} />
+        {showResults && compResults.length > 0 ? (
+          <CompressResults entries={compResults} onClose={handleCloseResults} />
+        ) : (
+          <ChatArea messages={activeMessages} />
+        )}
         <PromptInput
           onSend={handleSend}
           onAddFiles={addFiles}
@@ -146,6 +168,9 @@ export default function ChatPage() {
         entries={fileEntries}
         resolvedFiles={resolvedFiles}
         onRemove={removeFile}
+        onCompress={handleCompress}
+        compressing={compressing}
+        hasCompressResults={compResults.length > 0 && showResults}
       />
     </div>
   );

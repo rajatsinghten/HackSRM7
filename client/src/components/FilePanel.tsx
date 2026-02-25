@@ -1,7 +1,7 @@
 import { useState } from "react";
 import {
   FileText, Upload, X, Loader2, Hash, Cpu, HardDrive,
-  AlertCircle, ChevronDown, Layers,
+  AlertCircle, ChevronDown, Layers, Zap,
 } from "lucide-react";
 import type { FileEntry, AnalyzedFile } from "../hooks/useMultiFileAnalyzer";
 import { formatSize } from "../hooks/useFileAnalyzer";
@@ -101,9 +101,19 @@ export interface FilePanelProps {
   entries: FileEntry[];
   resolvedFiles: AnalyzedFile[];
   onRemove: (id: string) => void;
+  onCompress: () => void;
+  compressing: boolean;
+  hasCompressResults: boolean;
 }
 
-export default function FilePanel({ entries, resolvedFiles, onRemove }: FilePanelProps) {
+export default function FilePanel({
+  entries,
+  resolvedFiles,
+  onRemove,
+  onCompress,
+  compressing,
+  hasCompressResults,
+}: FilePanelProps) {
   const totalTokens = resolvedFiles.reduce((sum, f) => sum + f.tokenEstimate, 0);
   const hasResolved = resolvedFiles.length > 0;
 
@@ -151,6 +161,29 @@ export default function FilePanel({ entries, resolvedFiles, onRemove }: FilePane
             </span>
             <span className="fp-summary-accent">{totalTokens.toLocaleString()}</span>
           </div>
+          <button
+            className={`fp-compress-btn${compressing ? " fp-compress-btn--loading" : ""}${hasCompressResults ? " fp-compress-btn--done" : ""}`}
+            onClick={onCompress}
+            disabled={compressing}
+            type="button"
+          >
+            {compressing ? (
+              <>
+                <Loader2 size={15} className="fc-spinner" />
+                Compressing…
+              </>
+            ) : hasCompressResults ? (
+              <>
+                <Zap size={15} />
+                Re-Compress
+              </>
+            ) : (
+              <>
+                <Zap size={15} />
+                Compress Files
+              </>
+            )}
+          </button>
         </div>
       )}
     </aside>

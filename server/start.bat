@@ -13,6 +13,9 @@ if not exist "venv\" (
 REM Activate virtual environment
 call venv\Scripts\activate.bat
 
+REM Upgrade pip quietly
+python -m pip install --upgrade pip -q
+
 REM Install dependencies
 echo 📥 Installing dependencies...
 pip install -q -r requirements.txt

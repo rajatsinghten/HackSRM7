@@ -7,6 +7,13 @@
   padding: 0;
 }
 
+/* Override index.css generic button defaults so icon buttons render correctly */
+button {
+  padding: 0;
+  border: none;
+  background: transparent;
+}
+
 #root {
   width: 100%;
   margin: 0;
@@ -1608,7 +1615,7 @@
 
 .chat-empty-sub {
   font-size: 0.92rem;
-  color: #6666888;
+  color: #666888;
   max-width: 380px;
   line-height: 1.65;
 }

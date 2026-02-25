@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import type { FileCompressionEntry } from "../hooks/useCompressor";
 import { useCompressResults } from "../contexts/CompressResultsContext";
+import MonacoViewer from "../components/MonacoViewer";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -173,7 +174,7 @@ function ResultCard({ entry }: { entry: FileCompressionEntry }) {
             ))}
           </div>
 
-          <div className="cr-code-wrap">
+          <div className="cr-code-wrap cr-code-wrap--monaco">
             <button
               className="cr-copy-btn"
               onClick={handleCopy}
@@ -182,9 +183,13 @@ function ResultCard({ entry }: { entry: FileCompressionEntry }) {
             >
               {copied ? <Check size={13} /> : <Copy size={13} />}
             </button>
-            <pre className="cr-code">
-              <code>{tabContent[tab]}</code>
-            </pre>
+            <MonacoViewer
+              value={tabContent[tab]}
+              language={r.language}
+              maxHeight={480}
+              minHeight={120}
+              lineNumbers={tab === "original"}
+            />
           </div>
 
           {r.decodePreamble && (
@@ -236,9 +241,12 @@ function DecodePreamble({ preamble }: { preamble: string }) {
           >
             {copied ? <Check size={13} /> : <Copy size={13} />}
           </button>
-          <pre className="cr-code cr-code--preamble">
-            <code>{preamble}</code>
-          </pre>
+          <MonacoViewer
+            value={preamble}
+            language="plaintext"
+            maxHeight={320}
+            minHeight={80}
+          />
         </div>
       )}
     </div>

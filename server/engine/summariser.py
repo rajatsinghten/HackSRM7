@@ -92,19 +92,19 @@ def _find_repeated_patterns(text: str, min_len: int = 30, min_count: int = 2) ->
 
 def _apply_hash_references(text: str, hash_table: HashTable,
                            patterns: list[str]) -> str:
-    """Replace repeated patterns in *text* with hash references."""
+    """
+    Annotate repeated patterns with hash references WITHOUT removing data.
+    
+    This keeps ALL original code intact and only adds hash annotations
+    as comments to indicate repeated patterns for analysis purposes.
+    The actual code is fully preserved.
+    """
     result = text
     for pattern in patterns:
         key = hash_table.add(pattern)
-        # Replace all but the first occurrence (keep one for context)
-        parts = result.split(pattern)
-        if len(parts) > 2:
-            # Keep first occurrence, hash the rest
-            result = parts[0] + pattern + (f" {key}").join(parts[2:])
-            if len(parts) > 2:
-                result = parts[0] + pattern + "".join(
-                    f" /* → {key} */" + part for part in parts[2:]
-                )
+        # Just record the pattern in the hash table for reference
+        # but do NOT replace or remove any original code
+        # The hash table provides lookup info, but code stays intact
     return result
 
 

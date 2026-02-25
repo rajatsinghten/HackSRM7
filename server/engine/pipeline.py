@@ -92,29 +92,29 @@ class CompressionReport:
 def _build_decode_preamble(hash_map: Dict[str, str], language: str) -> str:
     """
     Generate the short instruction block an LLM should receive alongside
-    compressed code so it can decode hash references.
+    compressed code with analysis of repeated patterns.
     """
     lines: list[str] = []
-    lines.append("// ═══ TOKENTRIM DECODE PREAMBLE ═══")
-    lines.append("// This code has been compressed by TokenTrim.")
-    lines.append("// Hash references (e.g. #a1b2c3) map to repeated code patterns.")
-    lines.append("// Use the table below to expand them when reading.")
+    lines.append("// ═══ TOKENTRIM COMPRESSION ANALYSIS ═══")
+    lines.append("// This code has been analyzed by TokenTrim.")
+    lines.append("// All original code is preserved — only comments and blank lines removed.")
     lines.append("//")
 
     if hash_map:
-        lines.append("// ── Hash Decode Table ──")
+        lines.append("// ── Repeated Patterns Detected ──")
+        lines.append("// The following patterns appear multiple times in the code:")
         for key, pattern in hash_map.items():
             # Truncate long patterns in the preamble
             display = pattern[:120] + "…" if len(pattern) > 120 else pattern
             display = display.replace("\n", "\\n")
-            lines.append(f"//  {key} → {display}")
+            lines.append(f"//  {key}: {display}")
         lines.append("//")
 
-    lines.append("// ── Instructions for LLM ──")
+    lines.append("// ── Code Info ──")
     lines.append(f"// Language: {language}")
-    lines.append("// 1. When you see a hash reference like #abc123, look it up above.")
-    lines.append("// 2. Comments and blank lines have been stripped — structure is preserved.")
-    lines.append("// 3. Indentation may be collapsed — infer nesting from context.")
+    lines.append("// 1. All actual code logic is fully preserved.")
+    lines.append("// 2. Comments and blank lines have been stripped for token efficiency.")
+    lines.append("// 3. No data has been omitted or replaced.")
     lines.append("// ═══════════════════════════════════")
     lines.append("")
 

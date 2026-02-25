@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  ArrowLeft,
   ArrowDown,
   ArrowRight,
   BarChart3,
@@ -258,41 +257,9 @@ export default function AllResultsPage() {
     return null;
   }
 
-  const completed = entries.filter((e) => e.result !== null);
-  const totalOriginal = completed.reduce((s, e) => s + (e.result?.originalTokens ?? 0), 0);
-  const totalBest = completed.reduce((s, e) => s + (e.result?.bestTokens ?? 0), 0);
-  const totalReduction =
-    totalOriginal > 0 ? ((1 - totalBest / totalOriginal) * 100).toFixed(1) : "0";
-
   return (
     <div className="ar-fullpage">
-      {/* Galaxy background */}
-      <div className="galaxy-bg" style={{ zIndex: 0 }}>
-        {/* Intentionally omitted Galaxy component for perf on this page */}
-      </div>
-
       <div className="ar-page">
-        {/* Header */}
-        <div className="ar-header">
-          <button className="ar-back-btn" onClick={() => navigate("/chat")} type="button">
-            <ArrowLeft size={16} />
-            Back
-          </button>
-          <div className="ar-header-center">
-            <Zap size={16} className="ar-header-icon" />
-            <span className="ar-header-title">All Compression Results</span>
-          </div>
-          {completed.length > 0 && (
-            <div className="ar-header-stats">
-              <span className="ar-header-stat">
-                {totalOriginal.toLocaleString()} <ArrowRight size={12} />{" "}
-                <strong>{totalBest.toLocaleString()}</strong> tokens
-              </span>
-              <span className="ar-header-reduction">−{totalReduction}%</span>
-            </div>
-          )}
-        </div>
-
         {/* Results list */}
         <div className="ar-body">
           {entries.map((entry) => (

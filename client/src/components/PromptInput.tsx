@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import type { KeyboardEvent } from "react";
+import type { KeyboardEvent, ClipboardEvent } from "react";
 import { ArrowUp, Paperclip } from "lucide-react";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
@@ -10,6 +10,8 @@ export interface PromptInputProps {
   onAddFiles: (files: File[]) => void;
   /** True when at least one file is attached — used for canSend logic. */
   hasFiles?: boolean;
+  /** Called when the user pastes what looks like code (multiline / large block). */
+  onPasteCode?: (text: string) => void;
 }
 
 // ── Component ──────────────────────────────────────────────────────────────────
@@ -18,6 +20,7 @@ export default function PromptInput({
   disabled = false,
   onAddFiles,
   hasFiles = false,
+  onPasteCode,
 }: PromptInputProps) {
   const [value, setValue] = useState("");
 
@@ -54,6 +57,21 @@ export default function PromptInput({
     if (picked.length > 0) onAddFiles(picked);
   };
 
+  /** Intercept pastes that look like code blocks and route them to onPasteCode. */
+  const handlePaste = (e: ClipboardEvent<HTMLTextAreaElement>) => {
+    if (!onPasteCode) return;
+    const text = e.clipboardData.getData("text");
+    const lineCount = (text.match(/\n/g) ?? []).length;
+    // Treat as code if it has 3+ lines OR is a large single-line snippet (>120 chars with code chars)
+    const looksLikeCode =
+      lineCount >= 2 ||
+      (text.length > 120 && /[{}();=<>]/.test(text));
+    if (looksLikeCode) {
+      e.preventDefault();
+      onPasteCode(text);
+    }
+  };
+
   // ── Render ──────────────────────────────────────────────────────────────────
   return (
     <div className="prompt-bar">
@@ -67,6 +85,7 @@ export default function PromptInput({
           onChange={(e) => setValue(e.target.value)}
           onKeyDown={handleKeyDown}
           onInput={handleInput}
+          onPaste={handlePaste}
           disabled={disabled}
         />
 

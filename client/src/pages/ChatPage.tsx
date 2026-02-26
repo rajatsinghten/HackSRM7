@@ -43,6 +43,21 @@ export default function ChatPage() {
     compressFiles(filesToCompress);
   }, [fileEntries, messages, compressFiles, setExportContext]);
 
+  /** When code is pasted in the prompt, treat it as a virtual file and compress immediately. */
+  const handlePasteCode = useCallback(
+    (text: string) => {
+      const blob = new Blob([text], { type: "text/plain" });
+      const file = new File([blob], "pasted-code.txt", { type: "text/plain" });
+      const id = `paste-${Date.now()}`;
+      // Add to FilePanel so the user can see it
+      addFiles([file]);
+      // Save context and kick off compression immediately
+      setExportContext(messages, fileEntries);
+      compressFiles([{ id, file }]);
+    },
+    [addFiles, compressFiles, messages, fileEntries, setExportContext]
+  );
+
   const handleSend = useCallback(
     (text: string) => {
       const userMsg: Message = { id: uid(), role: "user", content: text };
@@ -102,6 +117,7 @@ export default function ChatPage() {
         <PromptInput
           onSend={handleSend}
           onAddFiles={addFiles}
+          onPasteCode={handlePasteCode}
           hasFiles={fileEntries.length > 0}
         />
       </div>

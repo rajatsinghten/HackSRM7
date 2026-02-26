@@ -185,7 +185,7 @@ export default function MonacoViewer({
           quickSuggestions: false,
           snippetSuggestions: "none",
           codeLens: false,
-          lightbulb: { enabled: "off" as const },
+          lightbulb: { enabled: 0 },
           renderValidationDecorations: "off",
         }}
       />

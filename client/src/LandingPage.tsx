@@ -1,4 +1,4 @@
-import { Zap, Code2, BrainCircuit, ArrowRight, Github, ShieldCheck, Puzzle, FileArchive } from "lucide-react";
+import { Zap, Code2, BrainCircuit, ArrowRight, ShieldCheck, Puzzle, FileArchive } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Galaxy from "./background";
 
@@ -23,25 +23,7 @@ function LandingPage() {
         />
       </div>
 
-      {/* Navbar */}
-      <nav className="navbar">
-        <div className="nav-brand">
-          <span className="nav-title">TokenTrim</span>
-        </div>
-        <div className="nav-links">
-          <a href="#features">Features</a>
-          <a href="#how-it-works">How It Works</a>
-          <a
-            href="https://github.com/rajatsinghten/HackSRM7"
-            target="_blank"
-            rel="noreferrer"
-            className="nav-github"
-          >
-            <Github size={18} />
-            GitHub
-          </a>
-        </div>
-      </nav>
+      {/* No navbar on landing — standalone hero experience */}
 
       {/* Hero */}
       <header className="hero">

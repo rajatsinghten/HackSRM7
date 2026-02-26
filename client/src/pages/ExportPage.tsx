@@ -12,6 +12,7 @@ import {
   FileText, Hash, Layers, Minimize2, Zap, AlertCircle, Loader2, ChevronDown,
   Download, ShieldCheck, Puzzle,
 } from "lucide-react";
+import AppNav from "../components/AppNav";
 import Galaxy from "../background";
 import type { FileCompressionEntry } from "../hooks/useCompressor";
 import { useCompressResults } from "../contexts/CompressResultsContext";
@@ -263,13 +264,13 @@ export default function ExportPage() {
       </div>
 
       {/* Top bar */}
-      <header className="ep-header">
-        <button className="ep-back-btn" onClick={() => navigate("/chat")} type="button">
-          <ArrowLeft size={16} /> Back to Chat
-        </button>
-        <h1 className="ep-title">Compression Results</h1>
-        <div className="ep-header-spacer" />
-      </header>
+      <AppNav
+        left={
+          <button className="app-nav-back" onClick={() => navigate("/chat")} type="button">
+            <ArrowLeft size={14} /> Back to Chat
+          </button>
+        }
+      />
 
       {/* Tabs */}
       <nav className="ep-tabs">

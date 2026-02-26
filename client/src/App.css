@@ -43,6 +43,117 @@ button {
 }
 
 /* ── Navbar ──────────────────────────────────────── */
+/* ══════════════════════════════════════════════════
+   SHARED APP NAV  (.app-nav)
+   Used on Landing, Chat, and Export pages.
+══════════════════════════════════════════════════ */
+
+.app-nav {
+  position: relative;
+  z-index: 100;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.7rem 1.5rem;
+  background: rgba(10, 10, 20, 0.55);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  flex-shrink: 0;
+}
+
+.app-nav--fixed {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+.app-nav-brand {
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #a78bfa, #6d28d9);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  white-space: nowrap;
+}
+
+.app-nav-slot {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.app-nav-slot--right {
+  justify-content: flex-end;
+}
+
+/* Back button */
+.app-nav-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #7070a0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  transition: color 0.15s, background 0.15s;
+}
+
+.app-nav-back:hover {
+  color: #c4b5fd;
+  background: rgba(124, 58, 237, 0.1);
+}
+
+/* Right-side hint text (chat page) */
+.app-nav-hint {
+  font-size: 0.72rem;
+  color: #45456a;
+  white-space: nowrap;
+}
+
+/* Landing page nav links */
+.app-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 1.6rem;
+}
+
+.app-nav-links a {
+  font-size: 0.88rem;
+  color: #a0a0b8;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.app-nav-links a:hover {
+  color: #e0e0f0;
+}
+
+.app-nav-github {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.8rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.app-nav-github:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.18) !important;
+  color: #e0e0f0 !important;
+}
+
+/* Legacy .navbar kept for reference — no longer rendered */
 .navbar {
   position: fixed;
   top: 0;

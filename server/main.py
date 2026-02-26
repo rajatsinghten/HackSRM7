@@ -37,7 +37,7 @@ app.add_middleware(
         "http://localhost:5174",  # Vite fallback
         "http://localhost:3000",  # Alternative
         "http://localhost:80",
-        "https://trimtoken.vercel.app" # Production
+        "https://tokentrim.vercel.app",  # Production
     ],
     allow_credentials=True,
     allow_methods=["*"],

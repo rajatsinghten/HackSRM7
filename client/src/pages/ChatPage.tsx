@@ -28,7 +28,7 @@ export default function ChatPage() {
   useEffect(() => {
     if (wasCompressing.current && !compressing && compResults.length > 0) {
       setResultsData(compResults);
-      navigate("/export");
+      navigate("/export"); 
     }
     wasCompressing.current = compressing;
   }, [compressing, compResults, setResultsData, navigate]);
